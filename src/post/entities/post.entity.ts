@@ -1,0 +1,38 @@
+import { User } from 'src/user/entities/user.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
+
+@ObjectType()
+@Entity({ name: 'posts' })
+export class Post {
+  @Field((type) => Int)
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Field()
+  @Column({ length: 500, nullable: false })
+  title: string;
+
+  @Field()
+  @Column({ length: 500, nullable: false })
+  type: string;
+
+  @Field()
+  @Column({ length: 500, nullable: false })
+  src: string;
+
+  @Field((type) => Int)
+  @Column({ default: 0 })
+  upVote: number;
+
+  @Column()
+  @Field((type) => Int)
+  userId: number;
+
+  @Field((type) => User)
+  @ManyToOne(() => User, (user) => user.posts, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
+  user: User;
+}
