@@ -23,13 +23,6 @@ export class UserResolver {
     return this.userService.findAll();
   }
 
-  @Mutation((returns) => User)
-  createUser(
-    @Args('createUserInput') createUserInput: CreateUserInput,
-  ): Promise<User> {
-    return this.userService.create(createUserInput);
-  }
-
   @ResolveField()
   async posts(@Parent() user: User) {
     const { id } = user;

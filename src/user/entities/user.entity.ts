@@ -1,6 +1,6 @@
 import { Post } from 'src/post/entities/post.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, HideField, Int, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 @Entity({ name: 'users' })
@@ -16,6 +16,10 @@ export class User {
   @Field()
   @Column({ unique: true, nullable: false })
   email: string;
+
+  @HideField()
+  @Column({ nullable: false })
+  password: string;
 
   @OneToMany(() => Post, (post) => post.user)
   @Field((type) => [Post], { nullable: true })

@@ -7,7 +7,7 @@ type Post {
   title: String!
   type: String!
   src: String!
-  upVote: Int!
+  likes: [User!]!
   userId: Int!
   user: User!
 }
@@ -19,31 +19,48 @@ type User {
   posts: [Post!]
 }
 
+type LoginOutput {
+  access_token: String!
+  user: User!
+}
+
+type RegisterOutput {
+  access_token: String!
+  user: User!
+}
+
 type Query {
   users: [User!]!
   posts: [Post!]!
+  me: User!
 }
 
 type Mutation {
-  createUser(createUserInput: CreateUserInput!): User!
   createPost(createPostInput: CreatePostInput!): Post!
   deletePost(postId: Int!): Boolean!
   updatePost(updatePostInput: UpdatePostInput!, postId: Int!): Post!
-  upVotePost(postId: Int!): Boolean!
-}
-
-input CreateUserInput {
-  email: String!
-  name: String!
+  likePost(postId: Int!): Post!
+  register(registerUserInput: RegisterInput!): RegisterOutput!
+  login(loginInput: LoginInput!): LoginOutput!
 }
 
 input CreatePostInput {
   title: String!
-  userId: Int!
   type: String!
   src: String!
 }
 
 input UpdatePostInput {
   title: String!
+}
+
+input RegisterInput {
+  email: String!
+  password: String!
+  name: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
 }

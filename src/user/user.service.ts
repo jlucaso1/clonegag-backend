@@ -1,8 +1,9 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { PostService } from 'src/post/post.service';
-import { FindManyOptions, Repository } from 'typeorm';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { CreateUserInput } from './dto/create.user.input';
 import { User } from './entities/user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -16,8 +17,8 @@ export class UserService {
   findAll(options?: FindManyOptions<User>): Promise<User[]> {
     return this.userRepository.find(options);
   }
-  findOne(id: number) {
-    return this.userRepository.findOneOrFail(id);
+  findOne(options: FindOneOptions<User>) {
+    return this.userRepository.findOne(options);
   }
   create(createUserInput: CreateUserInput) {
     const newUser = this.userRepository.create(createUserInput);
@@ -26,7 +27,7 @@ export class UserService {
   async delete(id: number) {
     return !!(await this.userRepository.delete(id)).affected;
   }
-  async findAllPosts(userId: number) {
+  findAllPosts(userId: number) {
     return this.postService.findAll({ where: { id: userId } });
   }
 }

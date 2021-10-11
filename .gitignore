@@ -36,3 +36,5 @@ lerna-debug.log*
 
 
 db.sqlite
+schema.gql
+pnpm-lock.yaml

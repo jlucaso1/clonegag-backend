@@ -1,5 +1,12 @@
 import { User } from 'src/user/entities/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinTable,
+  ManyToMany,
+} from 'typeorm';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
@@ -21,9 +28,10 @@ export class Post {
   @Column({ length: 500, nullable: false })
   src: string;
 
-  @Field((type) => Int)
-  @Column({ default: 0 })
-  upVote: number;
+  @ManyToMany(() => User)
+  @JoinTable()
+  @Field((type) => [User])
+  likes: User[];
 
   @Column()
   @Field((type) => Int)

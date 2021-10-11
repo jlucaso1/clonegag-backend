@@ -17,29 +17,27 @@ export class PostService {
 
   findAll(options?: FindManyOptions<Post>): Promise<Post[]> {
     return this.postRepository.find({
-      order: {
-        upVote: 'DESC',
-      },
       ...options,
+      relations: ['likes'],
     });
   }
   findOne(id: number) {
-    return this.postRepository.findOne(id);
+    return this.postRepository.findOne(id, { relations: ['likes'] });
   }
   getUser(userId: number): Promise<User> {
-    return this.userService.findOne(userId);
+    return this.userService.findOne({ where: { id: userId } });
   }
-  async create(data: CreatePostInput): Promise<Post> {
-    const user = await this.userService.findOne(data.userId);
+  async create(data: CreatePostInput, userId: number): Promise<Post> {
+    const user = await this.userService.findOne({ where: { id: userId } });
     if (!user) {
-      throw new Error(`The user with id: ${data.userId} does not exist!`);
+      throw new Error(`The user with id: ${userId} does not exist!`);
     }
     const preloadPost = this.postRepository.create({ ...data, user });
     return this.postRepository.save(preloadPost);
   }
   async delete(id: number): Promise<Boolean> {
     const result = await this.postRepository.delete(id);
-    if (!result.affected) {
+    if (result.affected == 0) {
       throw new Error(`The post with id: ${id} does not exist!`);
     }
     return true;
@@ -47,8 +45,20 @@ export class PostService {
   update(id: number, updatePostInput: UpdatePostInput) {
     return this.postRepository.update(id, updatePostInput);
   }
-  async upVote(id: number) {
-    const result = await this.postRepository.increment({ id }, 'upVote', 1);
-    return !!result.affected;
+
+  async likePost(postId: number, userId: number): Promise<Post> {
+    try {
+      const post = await this.findOne(postId);
+      if (post.likes.some((user) => user.id === userId)) {
+        post.likes = post.likes.filter((user) => user.id !== userId);
+        return this.postRepository.save(post);
+      } else {
+        const user = await this.userService.findOne({ where: { id: userId } });
+        post.likes.push(user);
+        return this.postRepository.save(post);
+      }
+    } catch (err) {
+      throw err;
+    }
   }
 }
