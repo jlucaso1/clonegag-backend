@@ -2,6 +2,14 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type User {
+  id: Int!
+  name: String!
+  email: String!
+  posts: [Post!]
+  profile: Profile!
+}
+
 type Post {
   id: Int!
   title: String!
@@ -12,11 +20,11 @@ type Post {
   user: User!
 }
 
-type User {
+type Profile {
   id: Int!
-  name: String!
-  email: String!
-  posts: [Post!]
+  userId: Int!
+  bio: String
+  picture: String
 }
 
 type LoginOutput {
@@ -31,17 +39,29 @@ type RegisterOutput {
 
 type Query {
   users: [User!]!
-  posts: [Post!]!
+  user(userId: Int!): User!
   me: User!
+  posts: [Post!]!
 }
 
 type Mutation {
+  editUser(updateUserInput: UpdateUserInput!): User!
   createPost(createPostInput: CreatePostInput!): Post!
   deletePost(postId: Int!): Boolean!
   updatePost(updatePostInput: UpdatePostInput!, postId: Int!): Post!
   likePost(postId: Int!): Post!
   register(registerUserInput: RegisterInput!): RegisterOutput!
   login(loginInput: LoginInput!): LoginOutput!
+}
+
+input UpdateUserInput {
+  name: String
+  profile: UpdateProfileInput
+}
+
+input UpdateProfileInput {
+  bio: String
+  picture: String
 }
 
 input CreatePostInput {
@@ -58,6 +78,12 @@ input RegisterInput {
   email: String!
   password: String!
   name: String!
+  profile: CreateProfileInput
+}
+
+input CreateProfileInput {
+  bio: String
+  picture: String
 }
 
 input LoginInput {

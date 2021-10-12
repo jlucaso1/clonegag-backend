@@ -1,5 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { IsAlpha, IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { CreateProfileInput } from 'src/user/dto/create.profile.input';
 
 @InputType()
 export class RegisterInput {
@@ -14,4 +15,7 @@ export class RegisterInput {
   @MinLength(5)
   @Field({ nullable: false })
   name: string;
+
+  @Field((type) => CreateProfileInput, { nullable: true })
+  profile: CreateProfileInput;
 }
