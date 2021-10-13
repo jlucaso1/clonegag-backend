@@ -1,36 +1,38 @@
+import { UseGuards } from '@nestjs/common';
 import {
-  Args,
-  Mutation,
+  Args, Int, Mutation,
   Parent,
   Query,
   ResolveField,
-  Resolver,
-  Int,
+  Resolver
 } from '@nestjs/graphql';
-import { DeletePostOutput } from './dto/delete.post.output';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
+import { User } from 'src/user/entities/user.entity';
+import { UserService } from 'src/user/user.service';
 import { CreatePostInput } from './dto/create.post.input';
+import { PostDTO } from './dto/post.dto';
 import { UpdatePostInput } from './dto/update.post.input';
 import { Post } from './entities/post.entity';
 import { PostService } from './post.service';
-import { UseGuards } from '@nestjs/common';
-import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
-import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
-import { User } from 'src/user/entities/user.entity';
-import { PostDTO } from './dto/post.dto';
 
 @Resolver((of) => PostDTO)
 export class PostResolver {
-  constructor(private postService: PostService) {}
+  constructor(
+    private postService: PostService,
+    private userService: UserService,
+  ) {}
 
   @Query((returns) => [PostDTO])
   posts(): Promise<Post[]> {
     return this.postService.findAll();
   }
 
-  // @ResolveField()
-  // user(@Parent() post: Post) {
-  //   return this.postService.getUser(post.userId);
-  // }
+  @ResolveField()
+  user(@Parent() post: Post) {
+    const { userId } = post;
+    return this.userService.findOne({ where: { id: userId } });
+  }
 
   @Mutation((returns) => PostDTO)
   @UseGuards(GqlAuthGuard)
