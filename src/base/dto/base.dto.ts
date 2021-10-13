@@ -1,8 +1,8 @@
-import { FilterableField, IDField } from '@nestjs-query/query-graphql';
-import { GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
+import { FilterableField } from '@nestjs-query/query-graphql';
+import { Field, GraphQLISODateTime, Int, ObjectType } from '@nestjs/graphql';
 @ObjectType()
 export class BaseDTO {
-  @IDField(() => ID)
+  @Field(() => Int)
   id: number;
   @FilterableField(() => GraphQLISODateTime)
   createdAt: Date;
