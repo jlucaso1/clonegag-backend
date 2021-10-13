@@ -5,7 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/user/entities/user.entity';
 import { UserInputError } from 'apollo-server-express';
-import { Profile } from 'src/user/entities/profile.entity';
+import { Profile } from 'src/profile/entities/profile.entity';
 
 @Injectable()
 export class AuthService {

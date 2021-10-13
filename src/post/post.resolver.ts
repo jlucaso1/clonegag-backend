@@ -16,22 +16,23 @@ import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { User } from 'src/user/entities/user.entity';
+import { PostDTO } from './dto/post.dto';
 
-@Resolver((of) => Post)
-export class postResolver {
+@Resolver((of) => PostDTO)
+export class PostResolver {
   constructor(private postService: PostService) {}
 
-  @Query((returns) => [Post])
+  @Query((returns) => [PostDTO])
   posts(): Promise<Post[]> {
     return this.postService.findAll();
   }
 
-  @ResolveField()
-  user(@Parent() post: Post) {
-    return this.postService.getUser(post.userId);
-  }
+  // @ResolveField()
+  // user(@Parent() post: Post) {
+  //   return this.postService.getUser(post.userId);
+  // }
 
-  @Mutation((returns) => Post)
+  @Mutation((returns) => PostDTO)
   @UseGuards(GqlAuthGuard)
   createPost(
     @Args('createPostInput') createPostInput: CreatePostInput,
@@ -46,7 +47,7 @@ export class postResolver {
     return this.postService.delete(postId);
   }
 
-  @Mutation((returns) => Post)
+  @Mutation((returns) => PostDTO)
   @UseGuards(GqlAuthGuard)
   updatePost(
     @Args('postId', { type: () => Int }) postId: number,
@@ -55,7 +56,7 @@ export class postResolver {
     return this.postService.update(postId, updatePostInput);
   }
 
-  @Mutation((returns) => Post)
+  @Mutation((returns) => PostDTO)
   @UseGuards(GqlAuthGuard)
   likePost(
     @Args('postId', { type: () => Int }) postId: number,

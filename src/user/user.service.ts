@@ -1,18 +1,18 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { PostService } from 'src/post/post.service';
+import { Profile } from 'src/profile/entities/profile.entity';
+import { ProfileService } from 'src/profile/profile.service';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { CreateUserInput } from './dto/create.user.input';
-import { User } from './entities/user.entity';
-import { Profile } from './entities/profile.entity';
 import { UpdateUserInput } from './dto/update.user.input';
+
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @Inject('USER_REPOSITORY')
     private userRepository: Repository<User>,
-    @Inject('PROFILE_REPOSITORY')
-    private profileRepository: Repository<Profile>,
     @Inject(forwardRef(() => PostService))
     private postService: PostService,
   ) {}
@@ -43,9 +43,6 @@ export class UserService {
   }
   findAllPosts(userId: number) {
     return this.postService.findAll({ where: { id: userId } });
-  }
-  findProfileByUserId(userId: number) {
-    return this.profileRepository.findOne({ where: { userId: userId } });
   }
 
   me(id: number) {
