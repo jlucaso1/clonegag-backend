@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { FindManyOptions, Repository } from 'typeorm';
@@ -35,12 +35,20 @@ export class PostService {
     const preloadPost = this.postRepository.create({ ...data, user });
     return this.postRepository.save(preloadPost);
   }
-  async delete(id: number): Promise<Boolean> {
-    const result = await this.postRepository.delete(id);
-    if (result.affected == 0) {
+  async delete(id: number): Promise<Post> {
+    const post = await this.findOne(id);
+
+    if (!post) {
       throw new Error(`The post with id: ${id} does not exist!`);
     }
-    return true;
+
+    const deletedPost = await this.postRepository.remove(post);
+
+    if (!deletedPost) {
+      throw new Error('Something went wrong while deleting the post');
+    }
+
+    return { ...deletedPost, id };
   }
   update(id: number, updatePostInput: UpdatePostInput) {
     return this.postRepository.update(id, updatePostInput);

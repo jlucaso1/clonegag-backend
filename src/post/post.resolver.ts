@@ -45,7 +45,7 @@ export class PostResolver {
     return this.postService.create(createPostInput, user.id);
   }
 
-  @Mutation((returns) => Boolean)
+  @Mutation((returns) => PostDTO)
   @UseGuards(GqlAuthGuard)
   deletePost(@Args('postId', { type: () => Int }) postId: number) {
     return this.postService.delete(postId);
