@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserInputError } from 'apollo-server-express';
-import * as bcrypt from 'bcrypt';
 import { Profile } from 'src/profile/entities/profile.entity';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
@@ -22,8 +21,6 @@ export class AuthService {
     };
   }
   async register(registerDTO: RegisterInput) {
-    const hashedPassword = await bcrypt.hash(registerDTO.password, 10);
-    registerDTO.password = hashedPassword;
     try {
       const user = new User();
       Object.assign(user, registerDTO);
@@ -37,7 +34,8 @@ export class AuthService {
       } = await this.userService.create(user);
       return rest;
     } catch (error) {
-      throw new UserInputError('User exists in database');
+      //error in user creation
+      throw new UserInputError('Error in User creation', error.driverError);
     }
   }
 
@@ -46,7 +44,8 @@ export class AuthService {
       where: { email },
     });
     if (!user) throw new Error('User not Found');
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await user.comparePassword(password);
+    // const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) throw new Error('Invalid password');
     return user;
   }

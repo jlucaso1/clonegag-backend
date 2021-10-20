@@ -5,7 +5,6 @@ import { CreateUserInput } from './dto/create.user.input';
 import { UpdateUserInput } from './dto/update.user.input';
 import { User } from './entities/user.entity';
 
-
 @Injectable()
 export class UserService {
   constructor(
@@ -31,10 +30,24 @@ export class UserService {
   async update(id: number, updateUserInput: UpdateUserInput) {
     const user = await this.findOne({ where: { id }, relations: ['profile'] });
 
-    updateUserInput.profile = Object.assign(
-      user.profile,
-      updateUserInput.profile,
-    );
+    // Change the user's profile
+    if (updateUserInput.profile) {
+      updateUserInput.profile = Object.assign(
+        user.profile,
+        updateUserInput.profile,
+      );
+    }
+    // Change password
+    if (updateUserInput.old_password && updateUserInput.new_password) {
+      //compare old password
+      const isMatch = await user.comparePassword(updateUserInput.old_password);
+      if (!isMatch) {
+        throw new Error('Old password is wrong');
+      }
+      //update password
+      user.password = updateUserInput.new_password;
+    }
+
     const newUser = this.userRepository.merge(user, updateUserInput);
 
     return this.userRepository.save(newUser);
