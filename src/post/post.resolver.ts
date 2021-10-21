@@ -1,13 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import {
-  Args,
-  Int,
-  Mutation,
-  Parent,
-  Query,
-  ResolveField,
-  Resolver
-} from '@nestjs/graphql';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import { User } from 'src/user/entities/user.entity';
@@ -28,12 +20,6 @@ export class PostResolver {
   @Query((returns) => [PostDTO])
   posts(): Promise<Post[]> {
     return this.postService.findAll();
-  }
-
-  @ResolveField()
-  user(@Parent() post: Post) {
-    const { userId } = post;
-    return this.userService.findOne({ where: { id: userId } });
   }
 
   @Mutation((returns) => PostDTO)

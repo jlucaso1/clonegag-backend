@@ -28,14 +28,20 @@ export class UserService {
     return !!(await this.userRepository.delete(id)).affected;
   }
   async update(id: number, updateUserInput: UpdateUserInput) {
-    const user = await this.findOne({ where: { id }, relations: ['profile'] });
+    const user = await this.findOne({ where: { id } });
+
+    // Change the user's name
+    if (updateUserInput.name) {
+      user.name = updateUserInput.name;
+    }
 
     // Change the user's profile
     if (updateUserInput.profile) {
-      updateUserInput.profile = Object.assign(
-        user.profile,
-        updateUserInput.profile,
-      );
+      // Get the profile
+      const profile = await user.profile;
+      //Merge the profile
+      Object.assign(profile, updateUserInput.profile);
+      console.log(profile);
     }
     // Change password
     if (updateUserInput.old_password && updateUserInput.new_password) {
@@ -48,9 +54,7 @@ export class UserService {
       user.password = updateUserInput.new_password;
     }
 
-    const newUser = this.userRepository.merge(user, updateUserInput);
-
-    return this.userRepository.save(newUser);
+    return this.userRepository.save(user);
   }
   findAllPosts(userId: number) {
     return this.postService.findAll({ where: { id: userId } });

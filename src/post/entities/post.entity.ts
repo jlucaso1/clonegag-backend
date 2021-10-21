@@ -1,12 +1,12 @@
 import { BaseEntity } from 'src/base/entities/base.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
+  Entity,
   JoinTable,
   ManyToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn
 } from 'typeorm';
 
 @Entity({ name: 'posts' })
@@ -23,9 +23,11 @@ export class Post extends BaseEntity {
   @Column({ length: 500, nullable: false })
   src: string;
 
-  @ManyToMany(() => User)
+  @ManyToMany(() => User, {
+    // eager: true
+  })
   @JoinTable()
-  likes: User[];
+  likes: Promise<User[]>;
 
   @Column()
   userId: number;
@@ -34,5 +36,5 @@ export class Post extends BaseEntity {
     nullable: false,
     onDelete: 'CASCADE',
   })
-  user: User;
+  user: Promise<User>;
 }

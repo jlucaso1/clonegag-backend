@@ -13,6 +13,7 @@ import { UserModule } from './user/user.module';
     GraphQLModule.forRoot({
       debug: false,
       playground: true,
+      introspection: true,
       autoSchemaFile: 'schema.gql',
       context: ({ req }) => ({ req }),
       formatError: (error: GraphQLError) => {

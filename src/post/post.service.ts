@@ -18,11 +18,10 @@ export class PostService {
   findAll(options?: FindManyOptions<Post>): Promise<Post[]> {
     return this.postRepository.find({
       ...options,
-      relations: ['likes'],
     });
   }
   findOne(id: number) {
-    return this.postRepository.findOne(id, { relations: ['likes'] });
+    return this.postRepository.findOne(id);
   }
   getUser(userId: number): Promise<User> {
     return this.userService.findOne({ where: { id: userId } });
@@ -32,7 +31,10 @@ export class PostService {
     if (!user) {
       throw new Error(`The user with id: ${userId} does not exist!`);
     }
-    const preloadPost = this.postRepository.create({ ...data, user });
+    const preloadPost = this.postRepository.create({
+      ...data,
+    });
+    preloadPost.user = Promise.resolve(user);
     return this.postRepository.save(preloadPost);
   }
   async delete(id: number): Promise<Post> {
@@ -57,12 +59,15 @@ export class PostService {
   async likePost(postId: number, userId: number): Promise<Post> {
     try {
       const post = await this.findOne(postId);
-      if (post.likes.some((user) => user.id === userId)) {
-        post.likes = post.likes.filter((user) => user.id !== userId);
+      let likes = await post.likes;
+      if (likes.some((user) => user.id === userId)) {
+        likes = likes.filter((user) => user.id !== userId);
+        post.likes = Promise.resolve(likes);
         return this.postRepository.save(post);
       } else {
         const user = await this.userService.findOne({ where: { id: userId } });
-        post.likes.push(user);
+        likes.push(user);
+        post.likes = Promise.resolve(likes);
         return this.postRepository.save(post);
       }
     } catch (err) {

@@ -2,17 +2,11 @@ import { UseGuards } from '@nestjs/common';
 import {
   Args,
   Int,
-  Mutation,
-  Parent,
-  Query,
-  ResolveField,
-  Resolver
+  Mutation, Query, Resolver
 } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
-import { PostDTO } from 'src/post/dto/post.dto';
 import { PostService } from 'src/post/post.service';
-import { ProfileDTO } from 'src/profile/dto/profile.dto';
 import { ProfileService } from 'src/profile/profile.service';
 import { UpdateUserInput } from './dto/update.user.input';
 import { UserDTO } from './dto/user.dto';
@@ -38,17 +32,17 @@ export class UserResolver {
     return this.userService.findOne({ where: { id: userId } });
   }
 
-  @ResolveField(() => [PostDTO])
-  async posts(@Parent() user: User) {
-    const { id } = user;
-    return this.postService.findAll({ where: { id } });
-  }
+  // @ResolveField(() => [PostDTO])
+  // async posts(@Parent() user: User) {
+  //   const { id } = user;
+  //   return this.postService.findAll({ where: { id } });
+  // }
 
-  @ResolveField(() => ProfileDTO)
-  profile(@Parent() user: User) {
-    const { id: userId } = user;
-    return this.profileService.findOne({ where: { userId } });
-  }
+  // @ResolveField(() => ProfileDTO)
+  // profile(@Parent() user: User) {
+  //   const { id: userId } = user;
+  //   return this.profileService.findOne({ where: { userId } });
+  // }
 
   @Query((returns) => UserDTO)
   @UseGuards(GqlAuthGuard)

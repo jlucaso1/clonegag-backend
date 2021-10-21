@@ -26,7 +26,7 @@ export class AuthService {
       Object.assign(user, registerDTO);
       const profile = new Profile();
       Object.assign(profile, registerDTO.profile);
-      user.profile = profile;
+      user.profile = Promise.resolve(profile);
       const {
         password,
         profile: _profile,
