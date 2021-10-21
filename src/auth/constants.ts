@@ -1,3 +1,3 @@
 export const jwtConstants = {
-  secret: 'clonegag',
+  secret: process.env.JWT_SECRET || 'clonegag',
 };
