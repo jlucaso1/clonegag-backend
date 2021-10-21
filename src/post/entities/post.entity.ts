@@ -24,7 +24,7 @@ export class Post extends BaseEntity {
   src: string;
 
   @ManyToMany(() => User, {
-    // eager: true
+    onDelete: 'CASCADE',
   })
   @JoinTable()
   likes: Promise<User[]>;

@@ -3,26 +3,21 @@ import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import { User } from 'src/user/entities/user.entity';
-import { UserService } from 'src/user/user.service';
 import { CreatePostInput } from './dto/create.post.input';
 import { PostDTO } from './dto/post.dto';
 import { UpdatePostInput } from './dto/update.post.input';
-import { Post } from './entities/post.entity';
 import { PostService } from './post.service';
 
-@Resolver((of) => PostDTO)
+@Resolver(() => PostDTO)
 export class PostResolver {
-  constructor(
-    private postService: PostService,
-    private userService: UserService,
-  ) {}
+  constructor(private postService: PostService) {}
 
-  @Query((returns) => [PostDTO])
-  posts(): Promise<Post[]> {
+  @Query(() => [PostDTO])
+  posts() {
     return this.postService.findAll();
   }
 
-  @Mutation((returns) => PostDTO)
+  @Mutation(() => PostDTO)
   @UseGuards(GqlAuthGuard)
   createPost(
     @Args('createPostInput') createPostInput: CreatePostInput,
@@ -31,13 +26,13 @@ export class PostResolver {
     return this.postService.create(createPostInput, user.id);
   }
 
-  @Mutation((returns) => PostDTO)
+  @Mutation(() => PostDTO)
   @UseGuards(GqlAuthGuard)
   deletePost(@Args('postId', { type: () => Int }) postId: number) {
     return this.postService.delete(postId);
   }
 
-  @Mutation((returns) => PostDTO)
+  @Mutation(() => PostDTO)
   @UseGuards(GqlAuthGuard)
   updatePost(
     @Args('postId', { type: () => Int }) postId: number,
@@ -46,7 +41,7 @@ export class PostResolver {
     return this.postService.update(postId, updatePostInput);
   }
 
-  @Mutation((returns) => PostDTO)
+  @Mutation(() => PostDTO)
   @UseGuards(GqlAuthGuard)
   likePost(
     @Args('postId', { type: () => Int }) postId: number,

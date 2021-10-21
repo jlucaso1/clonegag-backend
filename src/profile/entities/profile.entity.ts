@@ -1,13 +1,13 @@
 import { BaseEntity } from 'src/base/entities/base.entity';
 import { User } from 'src/user/entities/user.entity';
-import { Entity, Column, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 
 @Entity({ name: 'profiles' })
 export class Profile extends BaseEntity {
   @Column()
   userId: number;
 
-  @OneToOne((type) => User, (user) => user.profile)
+  @OneToOne((type) => User, (user) => user.profile, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
 

@@ -22,11 +22,12 @@ export class User extends BaseEntity {
   @Column({ nullable: false })
   password: string;
 
-  @OneToMany(() => Post, (post) => post.user)
+  @OneToMany(() => Post, (post) => post.user, { onDelete: 'CASCADE' })
   posts: Promise<Post[]>;
 
   @OneToOne((type) => Profile, (profile) => profile.user, {
     cascade: true,
+    onDelete: 'CASCADE',
   })
   profile: Promise<Profile>;
 

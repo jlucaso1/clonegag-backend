@@ -17,18 +17,32 @@ export class UserService {
   findAll(options?: FindManyOptions<User>): Promise<User[]> {
     return this.userRepository.find(options);
   }
-  findOne(options: FindOneOptions<User>) {
-    return this.userRepository.findOne(options);
+  findOne(options: number | FindOneOptions<User>) {
+    if (typeof options === 'number')
+      return this.userRepository.findOne(options);
+    else return this.userRepository.findOne(options);
   }
   create(createUserInput: CreateUserInput) {
     const newUser = this.userRepository.create(createUserInput);
     return this.userRepository.save(newUser);
   }
   async delete(id: number) {
-    return !!(await this.userRepository.delete(id)).affected;
+    const user = await this.findOne(id);
+
+    if (!user) {
+      throw new Error(`The User with id: ${id} does not exist!`);
+    }
+
+    const deletedUser = await this.userRepository.remove(user);
+
+    if (!deletedUser) {
+      throw new Error('Something went wrong while deleting the post');
+    }
+
+    return { ...deletedUser, id };
   }
   async update(id: number, updateUserInput: UpdateUserInput) {
-    const user = await this.findOne({ where: { id } });
+    const user = await this.findOne(id);
 
     // Change the user's name
     if (updateUserInput.name) {
@@ -41,7 +55,6 @@ export class UserService {
       const profile = await user.profile;
       //Merge the profile
       Object.assign(profile, updateUserInput.profile);
-      console.log(profile);
     }
     // Change password
     if (updateUserInput.old_password && updateUserInput.new_password) {
@@ -61,6 +74,6 @@ export class UserService {
   }
 
   me(id: number) {
-    return this.findOne({ where: { id } });
+    return this.findOne(id);
   }
 }

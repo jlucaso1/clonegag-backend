@@ -27,12 +27,7 @@ export class AuthService {
       const profile = new Profile();
       Object.assign(profile, registerDTO.profile);
       user.profile = Promise.resolve(profile);
-      const {
-        password,
-        profile: _profile,
-        ...rest
-      } = await this.userService.create(user);
-      return rest;
+      return await this.userService.create(user);
     } catch (error) {
       //error in user creation
       throw new UserInputError('Error in User creation', error.driverError);

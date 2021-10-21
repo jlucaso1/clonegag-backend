@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
-import { FindManyOptions, Repository } from 'typeorm';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { CreatePostInput } from './dto/create.post.input';
 import { UpdatePostInput } from './dto/update.post.input';
 import { Post } from './entities/post.entity';
@@ -16,18 +16,18 @@ export class PostService {
   ) {}
 
   findAll(options?: FindManyOptions<Post>): Promise<Post[]> {
-    return this.postRepository.find({
-      ...options,
-    });
+    return this.postRepository.find(options);
   }
-  findOne(id: number) {
-    return this.postRepository.findOne(id);
+  findOne(options: number | FindOneOptions<Post>) {
+    if (typeof options === 'number')
+      return this.postRepository.findOne(options);
+    else return this.postRepository.findOne(options);
   }
   getUser(userId: number): Promise<User> {
-    return this.userService.findOne({ where: { id: userId } });
+    return this.userService.findOne(userId);
   }
   async create(data: CreatePostInput, userId: number): Promise<Post> {
-    const user = await this.userService.findOne({ where: { id: userId } });
+    const user = await this.userService.findOne(userId);
     if (!user) {
       throw new Error(`The user with id: ${userId} does not exist!`);
     }
@@ -65,7 +65,7 @@ export class PostService {
         post.likes = Promise.resolve(likes);
         return this.postRepository.save(post);
       } else {
-        const user = await this.userService.findOne({ where: { id: userId } });
+        const user = await this.userService.findOne(userId);
         likes.push(user);
         post.likes = Promise.resolve(likes);
         return this.postRepository.save(post);
